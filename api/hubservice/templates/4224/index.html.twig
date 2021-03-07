@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User Manager{% endblock %}
+
+{% block sidebar_link %}
+<a class="nav-link active" href="{{ path('user') }}">
+    User Manager 
+</a>
+{% endblock %}
+
+{% block header %}
+  <h1 class="h2">User Manager</h1>
+  <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group mr-2">
+          <a href="{{ path('user_create') }}" class="btn btn-sm btn-outline-primary">
+          Create User
+          </a>
+      </div>
+  </div>
+{% endblock %}
+
+{% block body %}
+
+  <div class="table-responsive">
+    <table class="table table-sm table-hover table-striped table-sm">
+      <thead class="thead-dark">
+        <tr>
+          <th>ID</th>
+          <th>Title</th>
+          <th>Assigned Tutor</th>
+          <th>Status</th>          
+          <th>Due On</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+{% if total_rows > 0 %}
+  {% for project in projects %}
+      {# Get the contents of the main quiz.json file #}
+      <tr style="color:{{ project ? '#28B463' : '#EC7063' }}">
+      <td>{{ project }}</td>
+      <td>
+        <span>
+        {{ project ? 'LIVE' : 'EDIT' }} - {{ project }}
+        </span>
+      </td>
+      <td>{{ project }}</td>
+      <td>{{ project }}</td>
+      <td>{{ project }}</td>
+      <td>
+          <a href="{{ path('user_update') }}" class="btn btn-primary btn-sm" role="button">
+          <i class="far fa-list-alt"></i></a>
+          <a href="#" class="btn btn-danger btn-sm" role="button">
+          <i class="far fa-trash-alt"></i></a>
+      </td>
+      </tr>
+  {% endfor %}
+{% endif %}
+      </tbody>
+
+    </table>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+  function removeClicked(id) {
+    if (confirm('Delete '+id+' and all its contents. Are you sure? This action is irreversable!')) {
+      let route = "{{ path('user') }}"
+      window.location.href = route
+    }
+  }
+ </script>
+{% endblock %}
+

@@ -1,0 +1,152 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User Manager{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}t>
+<link href="https://code.jquery.com/ui/1.12.1/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
+{% endblock %}
+
+{% block sidebar_link %}
+<a class="nav-link active" href="{{ path('user') }}">
+    User Manager 
+</a>
+{% endblock %}
+
+{% block header %}
+  <h1 class="h2">Create User</h1>
+{% endblock %}
+
+{% block body %}
+
+ <div class="table-responsive">
+    <table class='table table-hover table-responsive'>
+      <tbody>
+        <form action="{{ path('user_create') }}" method="post" name="quiz_form">
+          <tr>
+            <td>Name *</td>
+            <td colspan="3"><input type='text' name='title' id='title' class='form-control form-control-sm' /></td>
+          </tr>
+          <tr>
+            <td>Assign to tutor</td>
+            <td>
+                <select class='form-control form-control-sm' onchange="setDueDate()" name='tutorId' id='tutorId'>
+                    <option value='0'>Select type...</option>
+                    <option value="ADMIN"  selected>Super Admin</option>
+                    <option value="CLIENT"  selected>Client</option>
+                    <option value="ATTENDEE"  selected>Attendee</option>
+                </select>
+            </td>
+            <td>Due date</td>
+            <td><input type='text' name='dueDate' id='dueDate' value="" class='form-control form-control-sm' /></td>
+
+          </tr>
+          <tr>
+            <td></td>
+            <td>
+              <input type="submit" onclick="return validate_form(1)" value="Create" class="btn btn-sm btn-info">
+            </td>
+            <td></td>
+            <td>
+              <input id="nextBtn" type="submit" onclick="return validate_form(2)" value="Create and Add Content" class="btn btn-sm btn-info">
+            </td>
+          </tr>
+        </form>
+      </tbody>
+
+    </table>
+  </div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+<script>
+
+$( function() {
+  $('#dueDate').datepicker({ dateFormat: 'yy-mm-dd' }).change(evt => {
+    var selectedDate = new Date($('#dueDate').datepicker('getDate'));
+    var now = new Date();
+    now.setHours(0,0,0,0);
+    if (selectedDate < now) {
+      alert("Due date can't be in the past!");
+      $('#dueDate').val('');
+      return false;
+    }
+  });
+} );
+
+var matched = false
+
+function checkDirSafe(val) {
+  const exp = /^[0-9a-zA-Z]+$/
+  result = dirs.filter(dir => dir.toLowerCase() === val.toLowerCase())
+  if (result.length > 0 || val.length < 1 || !val.match(exp)) {
+    safe = false
+  } else {
+    safe = true
+  }
+  return safe
+}
+
+function checkDate(val) {
+  if (val.length != 10) return false
+  let parts = val.split("-")
+  if (parts.length != 3) return false
+  let day = parts[2]
+  if (day.length != 2) return false
+  day = parseInt(day, 10)
+  if (day == NaN || day > 31) return false
+  let month = parts[1]
+  if (month.length != 2) return false
+  month = parseInt(month, 10)
+  if (month == NaN || month > 12) return false
+  let year = parts[0]
+  if (year.length != 4) return false
+  year = parseInt(year, 10)
+  if (year == NaN) return false
+  return true
+}
+
+var camelize = function camelize(str) {
+    return str.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase());
+}
+
+function validate_form(x) {
+  if ($('#title').val().length < 3) {
+    alert('Please enter a title longer than 2 letters')
+    return false
+  } else {
+    let id = camelize($('#title').val())
+    if (checkDirSafe(id)){
+      $('#quizId').val(id)
+    } else {
+      alert('Quiz already exist! Please choose a different title!')
+      return false
+    }
+  }
+  if ($('#tutorId').val() == '0') {
+  } else {
+    $('#tutorName').val($('#tutorId option:selected').html())
+  }
+  let dueDate = $('#dueDate').val()
+  if (dueDate != "") {
+    if (!checkDate(dueDate)) {
+      alert('Quiz due date format not correct! Please use yyyy-mm-dd format!')
+      return false
+    }
+  }
+  if (x == 1) {
+    $('#goto').val('')
+  } else {
+    if ($('#tutorId').val() == '0') {
+      $('#goto').val('add')
+    } else {
+      $('#goto').val('assign')
+    }
+  }
+
+  return true
+}
+</script>
+{% endblock %}
