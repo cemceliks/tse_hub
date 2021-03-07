@@ -1,0 +1,7 @@
+{
+    "require": {
+        "friendsofsymfony/rest-bundle": "^3.0",
+        "symfony/serializer-pack": "^1.0",
+        "symfony/google-mailer": "^5.2"
+    }
+}
